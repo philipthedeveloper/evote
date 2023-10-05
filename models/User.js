@@ -18,14 +18,12 @@ const UserSchema = new mongoose.Schema(
       type: String,
       trim: true,
       default: "",
-      unique: true,
       match: [/^[^A-Za-z]*$/g, "Invalid phone number"],
     },
     username: {
       type: String,
       default: "",
       trim: true,
-      unique: true,
     },
     fullname: {
       type: String,
