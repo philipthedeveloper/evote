@@ -6,9 +6,10 @@ import {
   methodChecker,
   routeNotFound,
   errorHandler,
+  validateToken,
 } from "./middlewares/index.js";
 import connectDB from "./connection/mongodb.js";
-import { authRouter } from "./routes/index.js";
+import { authRouter, electionRouter } from "./routes/index.js";
 import cors from "cors";
 
 // Configure the app to be able to read env variables
@@ -41,6 +42,7 @@ app.use(requestLogger); // Log any incoming request to the console
 
 // Set up routing handlers
 app.use("/auth", authRouter);
+app.use("/election", validateToken, electionRouter);
 
 // All route that are not handled from the top will be handled here
 app.all("*", routeNotFound); // Returns a 404 response for such routes
