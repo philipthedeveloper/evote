@@ -6,7 +6,7 @@ const errorHandler = (err, req, res, next) => {
   let errorObject = {};
   console.log(err);
   if (err instanceof CustomError) {
-    errorObject.status = err.statusCode;
+    errorObject.status = err?.statusCode;
     errorObject.message = err.message;
   }
   if (err && err.name === "ValidationError") {
