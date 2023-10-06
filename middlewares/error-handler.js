@@ -26,6 +26,10 @@ const errorHandler = (err, req, res, next) => {
     errorObject.message = err.message;
     errorObject.status = StatusCodes.UNAUTHORIZED;
   }
+  if (err && err.name === "CastError") {
+    errorObject.message = `${err?.value} is not a valid ${err?.kind}`;
+    errorObject.status = StatusCodes.BAD_REQUEST;
+  }
   let status = errorObject?.status || StatusCodes.INTERNAL_SERVER_ERROR;
   return res.status(status).json({
     success: false,
