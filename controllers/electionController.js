@@ -40,7 +40,9 @@ export const updateElection = async (req, res) => {
       ERROR_TYPES.UNPROCESSABLE_ENTITY,
       "No update data provided"
     );
-  const election = await Election.findByIdAndUpdate(electionId, req.body);
+  const election = await Election.findByIdAndUpdate(electionId, req.body, {
+    new: true,
+  });
   if (!election)
     throwRequestError(
       ERROR_TYPES.NOT_FOUND,
