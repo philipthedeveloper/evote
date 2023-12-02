@@ -18,6 +18,9 @@ dotenv.config({ path: ".env" });
 // Create a new express app
 const app = express();
 
+// Create a root router
+const appRouter = express.Router();
+
 // Read env variables with the global process.env
 const PORT = process.env.PORT || 3001;
 const NODE_ENV = process.env.NODE_ENV;
@@ -41,8 +44,9 @@ app.use(express.json({})); // Parse json data in request body
 app.use(requestLogger); // Log any incoming request to the console
 
 // Set up routing handlers
-app.use("/auth", authRouter);
-app.use("/election", validateToken, electionRouter);
+appRouter.use("/auth", authRouter);
+appRouter.use("/election", validateToken, electionRouter);
+app.use("/evote/api/v1", appRouter);
 
 // All route that are not handled from the top will be handled here
 app.all("*", routeNotFound); // Returns a 404 response for such routes
