@@ -4,7 +4,7 @@ import { createConflictError } from "../errors/Conflict.js";
 
 const errorHandler = (err, req, res, next) => {
   let errorObject = {};
-  console.log(err);
+  // console.log(err);
   if (err instanceof CustomError) {
     errorObject.status = err?.statusCode;
     errorObject.message = err.message;
@@ -25,6 +25,16 @@ const errorHandler = (err, req, res, next) => {
   ) {
     errorObject.message = err.message;
     errorObject.status = StatusCodes.UNAUTHORIZED;
+  }
+
+  if (
+    err &&
+    (err.type === "entity.parse.failed" || err.name === "SyntaxError")
+  ) {
+    errorObject.status = err?.statusCode || err?.status;
+    errorObject.message = "JSON"
+      ? "Invalid JSON format in the request body. Please ensure there are no trailing commas."
+      : "Syntax Error: Invalid data format.";
   }
   let status = errorObject?.status || StatusCodes.INTERNAL_SERVER_ERROR;
   return res.status(status).json({
