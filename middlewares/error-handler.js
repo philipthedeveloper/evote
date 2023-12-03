@@ -8,13 +8,16 @@ const errorHandler = (err, req, res, next) => {
   let errorObject = {};
   console.log(err);
 
-  saveToErrorDetails(err);
+  process.env.NODE_ENV === "development" &&
+    (() => {
+      saveToErrorDetails(err);
 
-  errorLogger(req, res, (error) => {
-    if (error) {
-      console.log("Error logging failed: ", error);
-    }
-  });
+      errorLogger(req, res, (error) => {
+        if (error) {
+          console.log("Error logging failed: ", error);
+        }
+      });
+    })();
 
   if (err instanceof CustomError) {
     errorObject.status = err?.statusCode;
