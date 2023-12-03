@@ -7,6 +7,7 @@ import {
   routeNotFound,
   errorHandler,
   validateToken,
+  morganLogger,
 } from "./middlewares/index.js";
 import connectDB from "./connection/mongodb.js";
 import { authRouter, electionRouter } from "./routes/index.js";
@@ -41,6 +42,7 @@ app.use(
 app.use(methodChecker); // Checks if the incoming request method is supported
 app.use(express.urlencoded({ extended: true })); // Parse urlencoded data in request body
 app.use(express.json({})); // Parse json data in request body
+app.use(morganLogger);
 app.use(requestLogger); // Log any incoming request to the console
 
 // Set up routing handlers
