@@ -42,7 +42,8 @@ app.use(
 app.use(methodChecker); // Checks if the incoming request method is supported
 app.use(express.urlencoded({ extended: true })); // Parse urlencoded data in request body
 app.use(express.json({})); // Parse json data in request body
-app.use(morganLogger);
+
+process.env.NODE_ENV === "development" && app.use(morganLogger);
 app.use(requestLogger); // Log any incoming request to the console
 
 // Set up routing handlers
