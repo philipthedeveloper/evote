@@ -13,6 +13,7 @@ import {
   throwBadRequestError,
   throwUnauthorizedError,
   throwUnprocessableEntityError,
+  throwNotFoundError,
 } from "../helpers/index.js";
 import sendEmail from "../helpers/email-sender.js";
 import * as ERROR_TYPES from "../helpers/errorTypes.js";
@@ -175,4 +176,80 @@ const verifyOTP = async (req, res) => {
   return sendSuccessResponse(res, { message: "Verification successful" });
 };
 
-export { login, register, getUser, emailVerification, verifyOTP };
+const revokeUserEligibility = async (req, res) => {
+  if (req.currentUser) {
+    if (req.currentUser.accountType !== "admin") {
+      throwUnauthorizedError("Unauthorized user.");
+    }
+    const isBodyEmpty = checkEmptyRequestBody(req.body);
+    if (isBodyEmpty) throwBadRequestError("Please provide req body");
+    const { userId, email } = req.body;
+    if (!userId && !email)
+      throwBadRequestError("PLease provide user id or email");
+
+    let finder = {};
+    if (userId) {
+      finder._id = userId;
+    }
+    if (email) {
+      finder.email = email;
+    }
+    let user = await User.findOneAndUpdate(
+      finder,
+      { eligibility: "Not-Allowed" },
+      { new: true }
+    );
+
+    if (!user) throwNotFoundError("User not found.");
+    const userWithoutPassword = _.omit(user.toObject(), "password");
+    userWithoutPassword.userId = userWithoutPassword._id;
+    return sendSuccessResponse(res, {
+      message: "Successful",
+      user: userWithoutPassword,
+    });
+  }
+  // throwRequestError(ERROR_TYPES.UNAUTHORIZED, "User not authenticated");
+  throwUnauthorizedError("User not authenticated");
+};
+
+const removeAccount = async (req, res) => {
+  if (req.currentUser) {
+    if (req.currentUser.accountType !== "admin") {
+      throwUnauthorizedError("Unauthorized user.");
+    }
+    const isBodyEmpty = checkEmptyRequestBody(req.body);
+    if (isBodyEmpty) throwBadRequestError("Please provide req body");
+    const { userId, email } = req.body;
+    if (!userId && !email)
+      throwBadRequestError("PLease provide user id or email");
+
+    let finder = {};
+    if (userId) {
+      finder._id = userId;
+    }
+    if (email) {
+      finder.email = email;
+    }
+
+    let user = await User.findOneAndDelete(finder);
+
+    if (!user) throwNotFoundError("User not found.");
+    const userWithoutPassword = _.omit(user.toObject(), "password");
+    userWithoutPassword.userId = userWithoutPassword._id;
+    return sendSuccessResponse(res, {
+      message: "Account removed successfully.",
+      user: userWithoutPassword,
+    });
+  }
+  // throwRequestError(ERROR_TYPES.UNAUTHORIZED, "User not authenticated");
+  throwUnauthorizedError("User not authenticated");
+};
+export {
+  login,
+  register,
+  getUser,
+  emailVerification,
+  verifyOTP,
+  revokeUserEligibility,
+  removeAccount,
+};
