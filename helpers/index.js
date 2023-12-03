@@ -3,3 +3,4 @@ export * from "./email-sender.js";
 export * from "./throw-request-error.js";
 export * from "./check-empty-req-body.js";
 export * from "./errorTypes.js";
+export * from "./save-to-log.js";

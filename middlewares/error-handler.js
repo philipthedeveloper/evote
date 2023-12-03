@@ -1,10 +1,21 @@
 import { StatusCodes, ReasonPhrases } from "http-status-codes";
 import CustomError from "../errors/CustomError.js";
 import { createConflictError } from "../errors/Conflict.js";
+import { errorLogger } from "./req-logger.js";
+import { saveToErrorDetails } from "../helpers/index.js";
 
 const errorHandler = (err, req, res, next) => {
   let errorObject = {};
-  // console.log(err);
+  console.log(err);
+
+  saveToErrorDetails(err);
+
+  errorLogger(req, res, (error) => {
+    if (error) {
+      console.log("Error logging failed: ", error);
+    }
+  });
+
   if (err instanceof CustomError) {
     errorObject.status = err?.statusCode;
     errorObject.message = err.message;
@@ -37,6 +48,7 @@ const errorHandler = (err, req, res, next) => {
       : "Syntax Error: Invalid data format.";
   }
   let status = errorObject?.status || StatusCodes.INTERNAL_SERVER_ERROR;
+
   return res.status(status).json({
     success: false,
     status,
