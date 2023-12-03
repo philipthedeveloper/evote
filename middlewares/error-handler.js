@@ -1,7 +1,7 @@
 import { StatusCodes, ReasonPhrases } from "http-status-codes";
 import CustomError from "../errors/CustomError.js";
 import { createConflictError } from "../errors/Conflict.js";
-import { errorLogger } from "./req-logger.js";
+import { errorLogger } from "./req-logger.cjs";
 import { saveToErrorDetails } from "../helpers/index.js";
 
 const errorHandler = (err, req, res, next) => {
