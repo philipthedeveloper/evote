@@ -1,0 +1,481 @@
+openapi: 3.0.0
+info:
+  title: Evote API DOCS
+  description: |-
+    This is the complete api documentation for the evote backend service.
+      
+    _If you're encounter any issue with the documentation, Reach out to me [here](mailto:philipowolabi79@gmail.com). Alternatively, you can contact me via `+2349072060752` or on twitter via `@bytegorithm`_
+
+  contact: {}
+  version: "1.0.0"
+servers:
+  - url: https://evote-fq0h.onrender.com/evote/api/v1
+    variables: {}
+paths:
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: Login Account
+      operationId: LoginAccount
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/loginrequest"
+                - example:
+                    email: jane.doe@example.com
+                    password: strongPassword@123
+            example:
+              email: jane.doe@example.com
+              password: strongPassword@123
+        required: true
+      responses:
+        "200":
+          description: "Login successful"
+          headers: {}
+        "400":
+          description: "Email and Password required"
+          headers: {}
+        "401":
+          description: "Invalid Email or Password"
+          headers: {}
+      deprecated: false
+      security: []
+  /auth/register:
+    post:
+      tags:
+        - auth
+      summary: Register Account
+      operationId: RegisterAccount
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/registerrequest"
+                - example:
+                    email: jane.doe@example.com
+                    fullname: Jane Doe
+                    password: strongPassword@123
+            example:
+              email: jane.doe@example.com
+              fullname: Jane Doe
+              password: strongPassword@123
+        required: true
+      responses:
+        "201":
+          description: "Account created successfully"
+          headers: {}
+        "400":
+          description: "Bad Request : Syntax Error in JSON Data or Missing fields"
+          headers: {}
+        "409":
+          description: "Conflict: Already used credentials"
+          headers: {}
+      deprecated: false
+      security: []
+  /auth/get-user:
+    post:
+      tags:
+        - auth
+      summary: Get User Profile
+      operationId: GetUserProfile
+      parameters: []
+      responses:
+        "200":
+          description: "Successful"
+          headers: {}
+        "401":
+          description: "Unauthorized: Due to Missing Bearer Token"
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+  /auth/email-verification:
+    post:
+      tags:
+        - auth
+      summary: Request Email Verification OTP
+      operationId: RequestEmailVerificationOTP
+      parameters: []
+      responses:
+        "200":
+          description: "Successful: OTP Sent"
+          headers: {}
+        "401":
+          description: "Unauthorized: Due to Missing Bearer Token or User Does not exist"
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+  /auth/verify-otp:
+    post:
+      tags:
+        - auth
+      summary: Verify OTP
+      operationId: VerifyOTP
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/verifyOtpRequest"
+                - example:
+                    otp: "543812"
+            example:
+              otp: "543812"
+        required: true
+      responses:
+        "200":
+          description: "Successful: Verification Successful"
+          headers: {}
+        "400":
+          description: "Bad Request: No OTP Provided or Incorrect OTP length"
+          headers: {}
+        "401":
+          description: "Unauthorized: Due to Missing Bearer Token, Invalid OTP, Expired OTP"
+          headers: {}
+        "422":
+          description: "Unprocessed: Already Verified"
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+  /auth/remove-account:
+    post:
+      tags:
+        - auth
+      summary: Remove User Account
+      description: "The account carrying out this action must be of type \"admin\". That is, \n{\n\"accountType\": \"admin\"\n}. \n\nYou can provide either the _`email`_ or the _`userId`_ or _`both`_"
+      operationId: RemoveUserAccount
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/remove-account-request"
+                - example:
+                    example1:
+                      email: jane.doe@example.com
+                    example2:
+                      userId: "656cd6f6f5ea169c32e422fb"
+                    example3:
+                      email: jane.doe@example.come
+                      userId: "656cd6f6f5ea169c32e422fb"
+            example:
+              example1:
+                email: jane.doe@example.com
+              example2:
+                userId: "656cd6f6f5ea169c32e422fb"
+              example3:
+                email: jane.doe@example.come
+                userId: "656cd6f6f5ea169c32e422fb"
+        required: true
+      responses:
+        "200":
+          description: "Successful: Successful"
+          headers: {}
+        "400":
+          description: "Bad Request: No user Id or email provided"
+          headers: {}
+        "401":
+          description: "Unauthorized: Due to Missing Bearer Token or Account Type not admin"
+          headers: {}
+        "404":
+          description: "Not Found: If no match is found for provided user id or email or both"
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+  /auth/revoke-access:
+    post:
+      tags:
+        - auth
+      summary: Revoke User Accout
+      description: "This endpoint is used to change the eligibility of users to not allowed\n\nThe account carrying out this action must be of type \"admin\". That is, \n{\n\"accountType\": \"admin\"\n} \n\nYou can provide either the _`email`_ or the _`userId`_ or _`both`_"
+      operationId: RevokeUserAccout
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/revoke-access-request"
+                - example:
+                    example1:
+                      email: jane.doe@example.com
+                    example2:
+                      userId: "656cd6f6f5ea169c32e422fb"
+                    example3:
+                      email: jane.doe@example.come
+                      userId: "656cd6f6f5ea169c32e422fb"
+            example:
+              example1:
+                email: jane.doe@example.com
+              example2:
+                userId: "656cd6f6f5ea169c32e422fb"
+              example3:
+                email: jane.doe@example.come
+                userId: "656cd6f6f5ea169c32e422fb"
+        required: true
+      responses:
+        "200":
+          description: "Successful: Successful"
+          headers: {}
+        "400":
+          description: "Bad Request: No user Id or email provided"
+          headers: {}
+        "401":
+          description: "Unauthorized: Due to Missing Bearer Token or Account Type not admin"
+          headers: {}
+        "404":
+          description: "Not Found: If no match is found for provided user id or email or both"
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+  /election:
+    get:
+      tags:
+        - Election
+      summary: Get all Elections
+      operationId: GetallElections
+      parameters: []
+      responses:
+        "200":
+          description: "Successful"
+          headers: {}
+        "401":
+          description: "Unauthorized: Due to Missing Bearer Token"
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+    post:
+      tags:
+        - Election
+      summary: Create Election
+      operationId: CreateElection
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/createElectionRequest"
+                - example:
+                    electionName: NASSA 2024
+                    description: This is a short description
+            example:
+              electionName: NASSA 2024
+              description: This is a short description
+        required: true
+      responses:
+        "201":
+          description: "Successful"
+          headers: {}
+        "400":
+          description: "Bad Request : Syntax Error in JSON Data or Missing body"
+          headers: {}
+        "401":
+          description: "Unauthorized: Due to Missing Bearer Token"
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+  /election/{electionId}:
+    parameters:
+      - in: path
+        name: electionId
+        schema:
+          type: string
+        required: true
+        description: The election ID
+    get:
+      tags:
+        - Election
+      summary: Get Election
+      operationId: GetElection
+      parameters: []
+      responses:
+        "200":
+          description: "Successful"
+          headers: {}
+        "401":
+          description: "Unauthorized: Due to Missing Bearer Token"
+          headers: {}
+        "404":
+          description: "Not Found: Resource (election) not found."
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+    patch:
+      tags:
+        - Election
+      summary: Update Election
+      operationId: UpdateElection
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/updateElectionRequest"
+                - example:
+                    electionName: STUDENT WEEK 2024
+            example:
+              electionName: STUDENT WEEK 2024
+        required: true
+      responses:
+        "200":
+          description: "Successful"
+          headers: {}
+        "401":
+          description: "Unauthorized: Due to Missing Bearer Token"
+          headers: {}
+        "404":
+          description: "Not Found: Resource (election) not found."
+          headers: {}
+        "422":
+          description: "Unprocessable Entity: Missing update data."
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+    delete:
+      tags:
+        - Election
+      summary: Delete Election
+      operationId: DeleteElection
+      parameters: []
+      responses:
+        "200":
+          description: "Successful"
+          headers: {}
+        "401":
+          description: "Unauthorized: Due to Missing Bearer Token"
+          headers: {}
+        "404":
+          description: "Not Found: Resource (election) not found."
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+components:
+  schemas:
+    loginrequest:
+      title: Login Request
+      required:
+        - email
+        - password
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      example:
+        email: jane.doe@example.com
+        password: strongPassword@123
+    registerrequest:
+      title: Register Request
+      required:
+        - email
+        - fullname
+        - password
+      type: object
+      properties:
+        email:
+          type: string
+        fullname:
+          type: string
+        password:
+          type: string
+        accountType:
+          type: string
+          enum:
+            - admin
+            - user
+      example:
+        email: jane.doe@example.com
+        fullname: Jane Doe
+        password: strongPassword@123
+        accountType: admin
+    verifyOtpRequest:
+      title: Verify Otp Request
+      required:
+        - otp
+      type: object
+      properties:
+        otp:
+          type: string
+      example:
+        otp: "543812"
+    remove-account-request:
+      title: Remove Account Request
+      oneOf:
+        - properties:
+            email:
+              type: string
+            userId:
+              type: string
+      example:
+        email: jane.doe@example.com
+        # userId is optional and can be excluded if email is provided
+    revoke-access-request:
+      title: Revoke Access Request
+      oneOf:
+        - properties:
+            email:
+              type: string
+            userId:
+              type: string
+      example:
+        email: jane.doe@example.com
+        # userId is optional and can be excluded if email is provided
+    createElectionRequest:
+      title: Create Election Request
+      required:
+        - electionName
+        - description
+      type: object
+      properties:
+        electionName:
+          type: string
+        description:
+          type: string
+      example:
+        electionName: NASSA 2024
+        description: This is a short description
+    updateElectionRequest:
+      title: Update Election Request
+      required:
+        - electionName
+      type: object
+      properties:
+        electionName:
+          type: string
+      example:
+        electionName: STUDENT WEEK 2024
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+security: []
+tags:
+  - name: auth
+  - name: Election
