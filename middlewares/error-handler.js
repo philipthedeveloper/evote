@@ -1,10 +1,24 @@
 import { StatusCodes, ReasonPhrases } from "http-status-codes";
 import CustomError from "../errors/CustomError.js";
 import { createConflictError } from "../errors/Conflict.js";
+import { errorLogger } from "./req-logger.cjs";
+import { saveToErrorDetails } from "../helpers/index.js";
 
 const errorHandler = (err, req, res, next) => {
   let errorObject = {};
   console.log(err);
+
+  process.env.NODE_ENV === "development" &&
+    (() => {
+      saveToErrorDetails(err);
+
+      errorLogger(req, res, (error) => {
+        if (error) {
+          console.log("Error logging failed: ", error);
+        }
+      });
+    })();
+
   if (err instanceof CustomError) {
     errorObject.status = err?.statusCode;
     errorObject.message = err.message;
@@ -29,13 +43,23 @@ const errorHandler = (err, req, res, next) => {
   if (err && err.name === "CastError") {
     errorObject.message = `${err?.value} is not a valid ${err?.kind}`;
     errorObject.status = StatusCodes.BAD_REQUEST;
-  }
-  let status = errorObject?.status || StatusCodes.INTERNAL_SERVER_ERROR;
-  return res.status(status).json({
-    success: false,
-    status,
-    message: errorObject?.message || ReasonPhrases.INTERNAL_SERVER_ERROR,
-  });
-};
 
+    if (
+      err &&
+      (err.type === "entity.parse.failed" || err.name === "SyntaxError")
+    ) {
+      errorObject.status = err?.statusCode || err?.status;
+      errorObject.message = "JSON"
+        ? "Invalid JSON format in the request body. Please ensure there are no trailing commas."
+        : "Syntax Error: Invalid data format.";
+    }
+    let status = errorObject?.status || StatusCodes.INTERNAL_SERVER_ERROR;
+
+    return res.status(status).json({
+      success: false,
+      status,
+      message: errorObject?.message || ReasonPhrases.INTERNAL_SERVER_ERROR,
+    });
+  }
+};
 export default errorHandler;
