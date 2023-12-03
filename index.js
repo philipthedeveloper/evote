@@ -12,6 +12,7 @@ import {
 import connectDB from "./connection/mongodb.js";
 import { authRouter, electionRouter } from "./routes/index.js";
 import cors from "cors";
+import swaggerDocs from "./utils/swagger.js";
 
 // Configure the app to be able to read env variables
 dotenv.config({ path: ".env" });
@@ -37,6 +38,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "http://192.168.137.1:5173",
+      "http://localhost:5000",
       ...corsOrigins,
     ],
     credentials: true,
@@ -55,6 +57,7 @@ appRouter.use("/election", validateToken, electionRouter);
 app.use("/evote/api/v1", appRouter);
 
 // All route that are not handled from the top will be handled here
+swaggerDocs(app, PORT);
 app.all("*", routeNotFound); // Returns a 404 response for such routes
 app.use(errorHandler); // Handles all error in the app
 

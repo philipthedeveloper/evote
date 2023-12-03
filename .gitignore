@@ -1,4 +1,8 @@
 node_modules
+<<<<<<< Updated upstream
 *.env
 *.log
 docs.json
+=======
+*.env
+>>>>>>> Stashed changes
