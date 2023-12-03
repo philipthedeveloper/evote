@@ -29,12 +29,15 @@ const IPV4_ADDRESS = process.env.IPV4_ADDRESS;
 const HOSTNAME = NODE_ENV === "development" ? IPV4_ADDRESS : null;
 
 // Set up middlewares for the app
+const corsOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(",")
+  : [];
 app.use(
   cors({
     origin: [
       "http://localhost:5173",
       "http://192.168.137.1:5173",
-      process.env.CORS_ORIGIN,
+      ...corsOrigins,
     ],
     credentials: true,
   })
