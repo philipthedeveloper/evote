@@ -43,23 +43,23 @@ const errorHandler = (err, req, res, next) => {
   if (err && err.name === "CastError") {
     errorObject.message = `${err?.value} is not a valid ${err?.kind}`;
     errorObject.status = StatusCodes.BAD_REQUEST;
-
-    if (
-      err &&
-      (err.type === "entity.parse.failed" || err.name === "SyntaxError")
-    ) {
-      errorObject.status = err?.statusCode || err?.status;
-      errorObject.message = "JSON"
-        ? "Invalid JSON format in the request body. Please ensure there are no trailing commas."
-        : "Syntax Error: Invalid data format.";
-    }
-    let status = errorObject?.status || StatusCodes.INTERNAL_SERVER_ERROR;
-
-    return res.status(status).json({
-      success: false,
-      status,
-      message: errorObject?.message || ReasonPhrases.INTERNAL_SERVER_ERROR,
-    });
   }
+  if (
+    err &&
+    (err.type === "entity.parse.failed" || err.name === "SyntaxError")
+  ) {
+    errorObject.status = err?.statusCode || err?.status;
+    errorObject.message = "JSON"
+      ? "Invalid JSON format in the request body. Please ensure there are no trailing commas."
+      : "Syntax Error: Invalid data format.";
+  }
+  let status = errorObject?.status || StatusCodes.INTERNAL_SERVER_ERROR;
+
+  return res.status(status).json({
+    success: false,
+    status,
+    message: errorObject?.message || ReasonPhrases.INTERNAL_SERVER_ERROR,
+  });
 };
+
 export default errorHandler;
