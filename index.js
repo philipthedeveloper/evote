@@ -10,7 +10,7 @@ import {
   morganLogger,
 } from "./middlewares/index.js";
 import connectDB from "./connection/mongodb.js";
-import { authRouter, electionRouter } from "./routes/index.js";
+import { authRouter, electionRouter, pollRouter } from "./routes/index.js";
 import cors from "cors";
 import swaggerDocs from "./utils/swagger.js";
 
@@ -54,6 +54,7 @@ app.use(requestLogger); // Log any incoming request to the console
 // Set up routing handlers
 appRouter.use("/auth", authRouter);
 appRouter.use("/election", validateToken, electionRouter);
+appRouter.use("/poll", validateToken, pollRouter);
 app.use("/evote/api/v1", appRouter);
 
 // All route that are not handled from the top will be handled here
