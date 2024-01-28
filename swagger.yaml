@@ -375,6 +375,142 @@ paths:
       deprecated: false
       security:
         - bearer: []
+  /poll:
+    get:
+      tags:
+        - Poll
+      summary: Get all Polls
+      operationId: GetallPolls
+      parameters: []
+      responses:
+        "200":
+          description: "Successful"
+          headers: {}
+        "401":
+          description: "Unauthorized: Due to Missing Bearer Token"
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+    post:
+      tags:
+        - Poll
+      summary: Create Poll
+      operationId: CreatePoll
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/createPollRequest"
+                - example:
+                    electionId: 656cd745f5ea169c32e42300
+                    electionName: NASSA 2024
+                    post: President
+                    description: This is a short description
+                    contestants: ["Daddy Yo", "West"]
+            example:
+              electionId: 656cd745f5ea169c32e42300
+              electionName: NASSA 2024
+              post: President
+              description: This is a short description
+              contestants: ["Daddy Yo", "West"]
+        required: true
+      responses:
+        "201":
+          description: "Successful"
+          headers: {}
+        "400":
+          description: "Bad Request : Syntax Error in JSON Data or Missing body"
+          headers: {}
+        "401":
+          description: "Unauthorized: Due to Missing Bearer Token"
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+  /poll/{pollId}:
+    parameters:
+      - in: path
+        name: pollId
+        schema:
+          type: string
+        required: true
+        description: The poll ID
+    get:
+      tags:
+        - Poll
+      summary: Get Poll
+      operationId: GetPoll
+      parameters: []
+      responses:
+        "200":
+          description: "Successful"
+          headers: {}
+        "401":
+          description: "Unauthorized: Due to Missing Bearer Token"
+          headers: {}
+        "404":
+          description: "Not Found: Resource (poll) not found."
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+    patch:
+      tags:
+        - Poll
+      summary: Update Poll
+      operationId: UpdatePoll
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/updatePollRequest"
+                - example:
+                    electionName: STUDENT WEEK 2024
+            example:
+              electionName: STUDENT WEEK 2024
+        required: true
+      responses:
+        "200":
+          description: "Successful"
+          headers: {}
+        "401":
+          description: "Unauthorized: Due to Missing Bearer Token"
+          headers: {}
+        "404":
+          description: "Not Found: Resource (poll) not found."
+          headers: {}
+        "422":
+          description: "Unprocessable Entity: Missing update data."
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+    delete:
+      tags:
+        - Poll
+      summary: Delete Poll
+      operationId: DeletePoll
+      parameters: []
+      responses:
+        "200":
+          description: "Successful"
+          headers: {}
+        "401":
+          description: "Unauthorized: Due to Missing Bearer Token"
+          headers: {}
+        "404":
+          description: "Not Found: Resource (poll) not found."
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
 components:
   schemas:
     loginrequest:
@@ -471,6 +607,41 @@ components:
           type: string
       example:
         electionName: STUDENT WEEK 2024
+    createPollRequest:
+      title: Create Poll Request
+      required:
+        - electionId
+        - electionName
+        - post
+        - description
+        - contestants
+      type: object
+      properties:
+        electionId:
+          type: string
+        electionName:
+          type: string
+        post:
+          type: string
+        description:
+          type: string
+        contestants:
+          type: array
+          items:
+            type: string
+      example:
+        electionName: NASSA 2024
+        description: This is a short description
+    updatePollRequest:
+      title: Update Poll Request
+      required:
+        - description
+      type: object
+      properties:
+        description:
+          type: string
+      example:
+        description: This is an updated description
   securitySchemes:
     bearer:
       type: http
