@@ -4,7 +4,7 @@ import { UserSchema } from "./User.js";
 const PollSchema = new mongoose.Schema(
   {
     electionId: {
-      type: mongoose.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Election",
       required: [true, "Please provide election Id"],
     },
