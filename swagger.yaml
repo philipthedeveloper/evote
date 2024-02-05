@@ -511,6 +511,109 @@ paths:
       deprecated: false
       security:
         - bearer: []
+  /vote:
+    get:
+      tags:
+        - Vote
+      summary: Get all Votes
+      operationId: GetallVotes
+      parameters: []
+      responses:
+        "200":
+          description: "Successful"
+          headers: {}
+        "401":
+          description: "Unauthorized: Due to Missing Bearer Token"
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+    post:
+      tags:
+        - Vote
+      summary: Create Vote
+      operationId: CreateVote
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/createVoteRequest"
+                - example:
+                    pollId: "656cd745f5ea169c32e42300"
+                    contestantName: "NASSA 2024"
+                    votersId: "President"
+            example:
+              pollId: "656cd745f5ea169c32e42300"
+              contestantName: "Daddy Yo"
+              votersId: "656cd745f5ea169c32e42300"
+        required: true
+      responses:
+        "201":
+          description: "Voted"
+          headers: {}
+        "400":
+          description: "Bad Request : Syntax Error in JSON Data or Missing body"
+          headers: {}
+        "401":
+          description: "Unauthorized: Due to Missing Bearer Token"
+          headers: {}
+        "404":
+          description: "Not Found: Contestant name missing in poll"
+          headers: {}
+        "422":
+          description: "Unprocessed: Already Voted!"
+      deprecated: false
+      security:
+        - bearer: []
+  /vote/{voteId}:
+    parameters:
+      - in: path
+        name: voteId
+        schema:
+          type: string
+        required: true
+        description: The vote ID
+    get:
+      tags:
+        - Vote
+      summary: Get Vote
+      operationId: GetVote
+      parameters: []
+      responses:
+        "200":
+          description: "Successful"
+          headers: {}
+        "401":
+          description: "Unauthorized: Due to Missing Bearer Token"
+          headers: {}
+        "404":
+          description: "Not Found: Resource (vote) not found."
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
+    delete:
+      tags:
+        - Vote
+      summary: Delete Vote
+      operationId: DeleteVote
+      parameters: []
+      responses:
+        "200":
+          description: "Successful"
+          headers: {}
+        "401":
+          description: "Unauthorized: Due to Missing Bearer Token"
+          headers: {}
+        "404":
+          description: "Not Found: Resource (vote) not found."
+          headers: {}
+      deprecated: false
+      security:
+        - bearer: []
 components:
   schemas:
     loginrequest:
@@ -642,6 +745,22 @@ components:
           type: string
       example:
         description: This is an updated description
+    createVoteRequest:
+      title: Create Vote Request
+      required:
+        - pollId
+        - contestantName
+        - votersId
+      type: object
+      properties:
+        pollId:
+          type: string
+        contestantName:
+          type: string
+        votersId:
+          type: string
+      example:
+        contestantName: "Daddy Yo"
   securitySchemes:
     bearer:
       type: http
