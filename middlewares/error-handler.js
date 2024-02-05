@@ -44,6 +44,10 @@ const errorHandler = (err, req, res, next) => {
     errorObject.message = `${err?.value} is not a valid ${err?.kind}`;
     errorObject.status = StatusCodes.BAD_REQUEST;
   }
+  if (err && err.name === "MissingSchemaError") {
+    (errorObject.message = err?.message || "An error occured"),
+      (errorObject.status = StatusCodes.INTERNAL_SERVER_ERROR);
+  }
   if (
     err &&
     (err.type === "entity.parse.failed" || err.name === "SyntaxError")
